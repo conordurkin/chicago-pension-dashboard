@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(node -e ' *)",
+      "Bash(curl -s -o /tmp/history-page.html -w \"HTTP %{http_code}\\\\n\" http://localhost:3000/history)",
+      "Bash(curl -s -o /tmp/h.html -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" http://localhost:3000/history)",
+      "Bash(pdfinfo data/manual/cafrs/meabf-av-2001.pdf)",
+      "WebFetch(domain:igchicago.org)",
+      "WebFetch(domain:civicfed.org)",
+      "WebFetch(domain:www.bettergov.org)",
+      "WebFetch(domain:www.civicfed.org)",
+      "WebFetch(domain:www.chicagocontrarian.com)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:3000/burden)",
+      "Bash(curl -s http://localhost:3000/burden)",
+      "WebFetch(domain:www.cookcountyclerkil.gov)",
+      "WebFetch(domain:www.illinoispolicy.org)",
+      "Bash(npx vitest *)",
+      "Bash(npm test *)",
+      "Bash(git -C /Users/conordurkin/Desktop/Projects/Claude/pension_dashboard status)",
+      "Bash(git -C /Users/conordurkin/Desktop/Projects/Claude/pension_dashboard log --oneline -10)"
+    ]
+  }
+}

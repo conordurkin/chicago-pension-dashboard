@@ -1,0 +1,6 @@
+fundId,fy,aalGASB25,ava,mva,uaalAVA,fundedRatioAVA,payroll,employerContribution,employeeContribution,benefitPayments,adminExpenses,investmentIncome,discountRate,actives,avgActiveSalary,beneficiaries,avgBenefit,adec,costMethod,sourceNote
+labf,2001,,,1570707258,,,,659946,20017224,77857376,1806263,-19125165,,,,4099,22750,,EAN,labf-av-2001 Table 9 (Member/City/Inv/Benefits/Refunds/Admin); beneficiaries+avgBenefit from labf-av-2002 Exhibit M+N
+labf,2002,,,1388088950,,,,82865,20189214,81628534,1814283,-119447570,,,,4151,24082,,EAN,labf-av-2002 Table 9; beneficiaries+avgBenefit from Exhibit M+N
+labf,2020,,,,,,,,,169056754,,,,,,,55576,,EAN,labf-fs-2020 Statement of Changes (benefits+refunds); avgBenefit from LABF-AV-2020 Exhibit N (service retirees)
+pabf,2001,,,,,,,,,,,,0.080,,,,,,EAN,assumed 8.0% per 1999-2003 PABF AV bracket (no saved 2001 AV)
+pabf,2002,,,,,,,,,,,,0.080,,,,,,EAN,assumed 8.0% per 1999-2003 PABF AV bracket (no saved 2002 AV)
