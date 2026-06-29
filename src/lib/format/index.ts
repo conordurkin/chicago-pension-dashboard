@@ -31,12 +31,6 @@ export function formatDollarsLong(n: number | null, decimals = 1): string {
   return `${sign}$${abs.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 }
 
-/** Format a dollar value in millions, e.g. $125M. */
-export function formatMillions(n: number | null, decimals = 0): string {
-  if (n === null || !Number.isFinite(n)) return '—';
-  return `$${(n / 1e6).toFixed(decimals)}M`;
-}
-
 /** Format a decimal as a percentage with configurable precision. */
 export function formatPercent(n: number | null, decimals = 1): string {
   if (n === null || !Number.isFinite(n)) return '—';
