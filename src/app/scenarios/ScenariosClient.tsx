@@ -11,6 +11,8 @@ import { ChartContainer } from '@/components/content/ChartContainer';
 import { KPITile } from '@/components/content/KPITile';
 import { ProjectionChart } from '@/components/charts/ProjectionChart';
 import { ContributionsProjectionChart } from '@/components/charts/ContributionsProjectionChart';
+import { ScenarioGrowthModule } from '@/components/charts/ScenarioGrowthModule';
+import { CHICAGO_DEMOGRAPHICS } from '@/lib/data/cityContext';
 import {
   defaultPerFundParams,
   runPerFundProjection,
@@ -513,6 +515,18 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
             />
           )}
         </ChartContainer>
+
+        <ScenarioGrowthModule
+          projected={projectedYears.map((y) => ({
+            fy: y.fy,
+            uaal: y.uaal,
+            employerContribution: y.employerContribution,
+          }))}
+          basePopulation={CHICAGO_DEMOGRAPHICS.population}
+          baseYear={latest.fy}
+          targetYear={targetYear}
+          color={meta.color}
+        />
 
         <section className="rounded-xl border border-slate-200 bg-amber-50 p-4 text-sm text-amber-900">
           <strong>A caveat:</strong> this is a layered-amortization model built on top of each

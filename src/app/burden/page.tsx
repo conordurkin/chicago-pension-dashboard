@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { PerHouseholdContributionChart } from '@/components/charts/PerHouseholdContributionChart';
+import { GrowthBurdenSection } from '@/components/charts/GrowthBurdenSection';
 import { KPITile } from '@/components/content/KPITile';
 import { loadAllFunds } from '@/lib/data/loadFund';
 import {
@@ -52,6 +53,16 @@ export default function BurdenPage() {
   const debtShareOfCityLevy = debtLevy2024 / cityLevyTotal2024;
   const libraryShareOfCityLevy = libraryLevy2024 / cityLevyTotal2024;
   const propertyTaxPerHousehold = pensionLevy2024 / households;
+
+  // Fixed nominal contribution path for the growth module: FY2024 actual,
+  // then the AV-baseline projection. The obligation does not move; only the
+  // population denominator grows.
+  const growthContributions = [
+    { fy: latest.fy, employerContribution: erContribution },
+    ...proj
+      .filter((p) => p.fy > latest.fy && p.employerContribution !== null)
+      .map((p) => ({ fy: p.fy, employerContribution: p.employerContribution as number })),
+  ];
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
@@ -126,6 +137,46 @@ export default function BurdenPage() {
             liability.
           </p>
         </div>
+      </section>
+
+      {/* Section: Growth */}
+      <section className="mb-12">
+        <h2 className="mb-3 text-2xl font-semibold tracking-tight text-slate-900">
+          How growth makes this easier
+        </h2>
+        <p className="mb-3 text-slate-700">
+          Here&apos;s the key thing to understand: our liabilities are{' '}
+          <em className="font-medium text-slate-900">fixed dollar amounts</em>. Based on the
+          Illinois Constitution, we have no real way of reducing those liabilities in absolute
+          terms - but because they&apos;re fixed liabilities, they also don&apos;t scale up as
+          the city grows. Growth to our tax base or population spread the burden over a larger
+          populace - making our path out that much easier to bear.
+        </p>
+        <p className="mb-3 text-slate-700">
+          From 2010 to 2020, Chicago grew by just ~1.9% (about +0.2% per year). Over the same
+          decade, Sun Belt cities like Austin and Fort Worth grew by roughly 2% per year - about
+          ten times faster. And that compounds: an extra ~2 percentage points of population
+          growth a year would lower the per-person burden by{' '}
+          <span className="font-semibold">nearly 50% by 2055</span>.
+        </p>
+        <p className="mb-5 text-slate-700">
+          Use the controls below to control the denominator and watch how faster growth rates
+          make our challenge easier.
+        </p>
+        <GrowthBurdenSection
+          contributions={growthContributions}
+          basePopulation={population}
+          baseYear={fy2024.fy}
+          color={AGGREGATE_METADATA.color}
+        />
+        <p className="mt-4 text-sm text-slate-500">
+          Growth presets are grounded in Census data. <span className="font-medium">Recent
+          trend</span> is Chicago&apos;s 2010-2020 pace (+1.9% over the decade, about +0.2%/yr);{' '}
+          <span className="font-medium">Sun Belt pace</span> matches the fastest-growing large
+          U.S. cities (Fort Worth +2.2%, Austin metro +2.3%, 2023-24); and{' '}
+          <span className="font-medium">Decline</span> reflects the city&apos;s 2000s and
+          post-2020 losses.
+        </p>
       </section>
 
       {/* Section 2: Property tax pension levy */}
