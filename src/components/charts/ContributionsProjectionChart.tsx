@@ -22,7 +22,7 @@ interface ProjectedPoint {
 interface ContributionsProjectionChartProps {
   historical: YearObservation[];
   projected: ProjectedPoint[];
-  /** Optional actuary-provided baseline from the fund's 2024 AV. */
+  /** Optional actuary-provided baseline from the fund's latest AV. */
   baseline?: YearObservation[];
   color: string;
   targetYear: number;

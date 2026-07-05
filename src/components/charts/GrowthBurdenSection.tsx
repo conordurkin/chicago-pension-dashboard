@@ -41,9 +41,9 @@ interface ContribPoint {
 }
 
 interface GrowthBurdenSectionProps {
-  /** FY2024 actual + AV-baseline projected employer contributions, fixed in $. */
+  /** Latest-FY actual + AV-baseline projected employer contributions, fixed in $. */
   contributions: ContribPoint[];
-  /** Base-year (FY2024) city population. */
+  /** Base-year (latest FY) city population. */
   basePopulation: number;
   /** Base year the denominator is anchored to. */
   baseYear: number;

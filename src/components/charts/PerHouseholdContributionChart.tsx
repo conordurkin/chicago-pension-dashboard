@@ -20,7 +20,7 @@ interface PerHouseholdContributionChartProps {
   households: number;
   color: string;
   startFy?: number;
-  /** Annual NC growth assumption applied to the FY2024 base for projection years. */
+  /** Annual NC growth assumption applied to the latest-FY base for projection years. */
   ncGrowthRate?: number;
 }
 
@@ -35,8 +35,6 @@ interface Row {
   regime: Regime;
 }
 
-const NC_PROJECTION_BASE_FY = 2024;
-
 export function PerHouseholdContributionChart({
   historical,
   projected,
@@ -45,8 +43,13 @@ export function PerHouseholdContributionChart({
   startFy = 2001,
   ncGrowthRate = 0.03,
 }: PerHouseholdContributionChartProps) {
-  const ncBase =
-    historical.find((o) => o.fy === NC_PROJECTION_BASE_FY)?.normalCostER ?? null;
+  // Base the projected normal-cost split on the latest observed year with
+  // employer normal cost reported.
+  const ncBaseObs = [...historical]
+    .reverse()
+    .find((o) => o.normalCostER !== null);
+  const ncBase = ncBaseObs?.normalCostER ?? null;
+  const ncBaseFy = ncBaseObs?.fy ?? 0;
 
   const rows: Row[] = [];
   const seen = new Set<number>();
@@ -73,7 +76,7 @@ export function PerHouseholdContributionChart({
       const total = p.employerContribution;
       const ncProjected =
         ncBase !== null
-          ? ncBase * Math.pow(1 + ncGrowthRate, p.fy - NC_PROJECTION_BASE_FY)
+          ? ncBase * Math.pow(1 + ncGrowthRate, p.fy - ncBaseFy)
           : null;
       const amort =
         total !== null && ncProjected !== null ? Math.max(0, total - ncProjected) : null;

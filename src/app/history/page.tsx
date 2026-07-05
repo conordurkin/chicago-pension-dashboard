@@ -156,11 +156,12 @@ export default function HistoryPage() {
           />
           <p className="mt-4 border-t border-slate-100 pt-3 text-sm text-slate-600">
             Particularly noteworthy is the green line&apos;s performance since 2007. Chicago&apos;s
-            combined market-value assets peaked at about $14.6B that year. The system ended 2024
-            at roughly $12.4B, still more than $2B below the pre-crisis high. Over the same
-            seventeen years, the liability grew by more than $25 billion. The funds aren&apos;t
-            losing ground because assets collapsed; they&apos;re losing ground because assets have
-            essentially treaded water for almost two decades while the bill kept climbing.
+            combined market-value assets peaked at about $14.6B that year. Even after a strong
+            2025 in the markets, the system ended 2025 at roughly $14.2B - still below the
+            pre-crisis high eighteen years later. Over the same period, the liability more than
+            doubled, growing by over $27 billion. The funds aren&apos;t losing ground because
+            assets collapsed; they&apos;re losing ground because assets have essentially treaded
+            water for almost two decades while the bill kept climbing.
           </p>
         </div>
       </section>

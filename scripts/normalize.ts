@@ -384,6 +384,9 @@ type PatchField = keyof Pick<
   | 'employerContribution' | 'employeeContribution' | 'benefitPayments'
   | 'adminExpenses' | 'investmentIncome' | 'discountRate' | 'actives'
   | 'avgActiveSalary' | 'beneficiaries' | 'avgBenefit' | 'adec'
+  | 'tplGASB67' | 'npl' | 'fundedRatioGASB67' | 'return1yr' | 'refunds'
+  | 'normalCostTotal' | 'normalCostER' | 'statutoryRequired' | 'mvaBeginning'
+  | 'inactiveVested' | 'totalMembership'
 >;
 
 interface PatchRow {
@@ -418,6 +421,12 @@ function loadPatchRows(csvPath: string): PatchRow[] {
     ['actives', 'actives'], ['avgActiveSalary', 'avgActiveSalary'],
     ['beneficiaries', 'beneficiaries'], ['avgBenefit', 'avgBenefit'],
     ['adec', 'adec'],
+    ['tplGASB67', 'tplGASB67'], ['npl', 'npl'],
+    ['fundedRatioGASB67', 'fundedRatioGASB67'], ['return1yr', 'return1yr'],
+    ['refunds', 'refunds'], ['normalCostTotal', 'normalCostTotal'],
+    ['normalCostER', 'normalCostER'], ['statutoryRequired', 'statutoryRequired'],
+    ['mvaBeginning', 'mvaBeginning'],
+    ['inactiveVested', 'inactiveVested'], ['totalMembership', 'totalMembership'],
   ];
 
   const rows: PatchRow[] = [];
@@ -431,7 +440,10 @@ function loadPatchRows(csvPath: string): PatchRow[] {
       const ci = idx(col);
       if (ci < 0) continue;
       const v = parseCsvCell(cells[ci] ?? '');
-      if (v !== null) patch[field] = field === 'actives' || field === 'beneficiaries' ? Math.round(v) : v;
+      const isCount =
+        field === 'actives' || field === 'beneficiaries' ||
+        field === 'inactiveVested' || field === 'totalMembership';
+      if (v !== null) patch[field] = isCount ? Math.round(v) : v;
     }
     rows.push({ fundId, fy, patch });
   }
@@ -462,6 +474,14 @@ function applyPatch(obs: YearObservation, patch: Partial<Record<PatchField, numb
   merged.activesPerBeneficiary =
     merged.actives !== null && merged.beneficiaries !== null && merged.beneficiaries > 0
       ? merged.actives / merged.beneficiaries : null;
+  if (patch.adec !== undefined || patch.employerContribution !== undefined) {
+    merged.contribShortfall =
+      merged.adec !== null && merged.employerContribution !== null
+        ? merged.adec - merged.employerContribution : null;
+    merged.percentRequiredPaid =
+      merged.adec !== null && merged.adec > 0 && merged.employerContribution !== null
+        ? merged.employerContribution / merged.adec : null;
+  }
   return merged;
 }
 
@@ -599,13 +619,24 @@ function main() {
       return patch ? applyPatch(obs, patch) : obs;
     });
     const earliestPpdYear = Math.min(...ppdObservations.map((o) => o.fy));
+    const latestPpdYear = Math.max(...ppdObservations.map((o) => o.fy));
+
+    // Patch rows for years after PPD coverage become new appended observations
+    // (e.g. FY2025 rows sourced from the funds' own AVs before PPD catches up).
+    const appendedObservations: YearObservation[] = [];
+    fundPatches.forEach((patch, fy) => {
+      if (fy > latestPpdYear) {
+        appendedObservations.push(applyPatch(emptyObservation(fy), patch));
+      }
+    });
 
     // Pre-PPD CAFR-derived rows for this fund — only keep years strictly before PPD coverage
     const preObservations = historicalRows
       .filter((r) => r.fundId === fundId && r.observation.fy < earliestPpdYear)
       .map((r) => r.observation);
 
-    const observations = [...preObservations, ...ppdObservations].sort((a, b) => a.fy - b.fy);
+    const observations = [...preObservations, ...ppdObservations, ...appendedObservations]
+      .sort((a, b) => a.fy - b.fy);
     const latestObservedFy = observations[observations.length - 1]?.fy ?? 0;
 
     // Load the fund's 2024 AV projection schedule. Drop any projection rows that

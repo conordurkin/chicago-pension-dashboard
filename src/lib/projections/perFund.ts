@@ -1,7 +1,7 @@
 /**
  * Per-fund scenario projection (v2 engine).
  *
- * Anchors on each fund's published FY2024 actuarial valuation baseline
+ * Anchors on each fund's published FY2025 actuarial valuation baseline (PABF: FY2024)
  * (`projectionsBaseline`) and treats scenario shocks as layered deltas
  * spawned on top of it. When no shocks are active, output equals the AV
  * trajectory by construction — this is the regression test that proves

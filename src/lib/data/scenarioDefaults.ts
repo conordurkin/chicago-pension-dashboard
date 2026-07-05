@@ -2,8 +2,9 @@
  * Per-fund constants used by the scenario engine.
  *
  * Payroll growth rates are derived as the CAGR of each fund's projected
- * covered payroll from FY2025 through its statutory target year, taken
- * directly from the fund's FY2024 actuarial valuation projection schedule.
+ * covered payroll from FY2026 through its statutory target year, taken
+ * directly from the fund's FY2025 actuarial valuation projection schedule
+ * (PABF: FY2024 AV — its FY2025 valuation is not yet published).
  * These rates are used for level-percent-of-pay amortization of scenario
  * layers (return-experience, target-override, etc.).
  *
@@ -16,10 +17,10 @@
 import type { FundId } from '@/types/pension';
 
 export const PAYROLL_GROWTH: Record<FundId, number> = {
-  meabf: 0.0241,
-  labf: 0.02,
+  meabf: 0.0235,
+  labf: 0.0199,
   pabf: 0.0141,
-  fabf: 0.0149,
+  fabf: 0.0257,
   aggregate: 0.02,
 };
 

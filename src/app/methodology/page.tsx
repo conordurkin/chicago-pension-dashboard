@@ -128,29 +128,32 @@ export default function MethodologyPage() {
         <h2>Actuary baseline projections</h2>
         <p>
           Alongside the scenario engine, the dashboard overlays each fund actuary&rsquo;s
-          own forward projection from the 2024 actuarial valuation. These are the
-          fund&rsquo;s &ldquo;if we follow the statutory funding schedule and all assumptions
-          are met&rdquo; glide path to 90% funded by 2055 (Police/Fire) or 2058 (Municipal/Laborers)
-          per P.A. 100-0023.
+          own forward projection from the 2025 actuarial valuation (PABF: 2024, its latest
+          published valuation). These are the fund&rsquo;s &ldquo;if we follow the statutory
+          funding schedule and all assumptions are met&rdquo; glide path to 90% funded by
+          2055 (Police/Fire) or 2058 (Municipal/Laborers) per P.A. 100-0023.
         </p>
         <ul>
           <li>
-            <strong>LABF</strong> &mdash; 2024 AV Table 4, 50-Year Projections (2024&ndash;2073). GRS.
+            <strong>LABF</strong> &mdash; 2025 AV Table 4, 50-Year Projections (2025&ndash;2074). GRS.
           </li>
           <li>
-            <strong>MEABF</strong> &mdash; 2024 AV Exhibit 8, 50-Year Projection (2024&ndash;2074). Segal.
+            <strong>MEABF</strong> &mdash; 2025 AV Exhibit 8, 50-Year Projection (2025&ndash;2075). Segal.
           </li>
           <li>
             <strong>PABF</strong> &mdash; 2024 AV Table 3A, 32-Year Projection (2024&ndash;2055) at a 6.75%
-            discount rate. GRS.
+            discount rate. GRS. PABF&rsquo;s FY2025 release was its audited financial
+            statements, which carry no projection schedule; this baseline will be replaced
+            when the 12/31/2025 valuation is published. Note it predates the P.A. 104-0065
+            Tier 2 benefit enhancement.
           </li>
           <li>
-            <strong>FABF</strong> &mdash; 2024 AV Exhibit 9, 38-Year Projection (2024&ndash;2061). Segal.
+            <strong>FABF</strong> &mdash; 2025 AV Exhibit 9, 37-Year Projection (2025&ndash;2062). Segal.
           </li>
         </ul>
         <p>
           The aggregate (all four combined) baseline sums the four fund projections for years
-          where all four are present &mdash; 2025&ndash;2055, the horizon of the shortest
+          where all four are present &mdash; 2026&ndash;2055, the horizon of the shortest
           (PABF) projection. Transcribed values are stored in{' '}
           <code>data/manual/projections/{'{'}fundId{'}'}.csv</code> (dollar values in thousands
           to match the AV format).
@@ -196,7 +199,7 @@ UAAL[t] = AAL[t] - MVA[t]`}</pre>
         <p>
           This is why the assumed-return slider is bounded at &plusmn;1pp around each
           fund&rsquo;s baseline. We don&rsquo;t extrapolate beyond what the funds have
-          actually disclosed. The four FY2024 baselines are:
+          actually disclosed. The four FY2025 baselines are:
         </p>
         <ul>
           <li>
@@ -204,26 +207,26 @@ UAAL[t] = AAL[t] - MVA[t]`}</pre>
             assets are not projected to deplete, so no blending is required).
           </li>
           <li>
-            <strong>MEABF</strong> &mdash; 6.62% (single equivalent rate, blending the 7.0%
-            long-term return assumption with a 4.30% 20-year tax-exempt municipal bond rate
-            because assets are projected to deplete before all benefits are paid).
+            <strong>MEABF</strong> &mdash; 6.75% (as of FY2025 assets are no longer projected
+            to deplete under the statutory schedule, so the single equivalent rate equals the
+            long-term return assumption; in FY2024 it was a blended 6.62%).
           </li>
           <li>
-            <strong>LABF</strong> &mdash; 6.64% (blended single equivalent rate).
+            <strong>LABF</strong> &mdash; 6.70% (blended single equivalent rate).
           </li>
           <li>
-            <strong>PABF</strong> &mdash; 6.66% (blended single equivalent rate).
+            <strong>PABF</strong> &mdash; 6.65% (blended single equivalent rate).
           </li>
         </ul>
         <p>
           For the aggregate view, the four anchor sets are summed and the baseline rate is the
           TPL-weighted average of the four fund baselines. Because the four baselines all
-          cluster within 13 bps of each other, treating the aggregate as a single fund with
+          cluster within 10 bps of each other, treating the aggregate as a single fund with
           one baseline is a close approximation.
         </p>
         <p>
           GASB does not require disclosure of normal-cost sensitivity to the discount rate,
-          and the funds&rsquo; FY2024 reports do not provide it. The engine approximates NC
+          and the funds&rsquo; FY2025 reports do not provide it. The engine approximates NC
           sensitivity by scaling NC by the same percentage change as TPL. This understates
           the true effect (NC has longer duration than TPL because new accruals pay out
           further into the future), but the dominant scenario impact comes from re-pricing

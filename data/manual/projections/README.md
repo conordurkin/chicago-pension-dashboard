@@ -1,9 +1,9 @@
-# Fund projection schedules (2024 actuarial valuations)
+# Fund projection schedules (2025 actuarial valuations; PABF still 2024)
 
 Each file `{fundId}.csv` contains the fund-actuary's own forward projection from the
-December 31, 2024 actuarial valuation. These are the authoritative "plan's own"
-projection paths — what the actuary says will happen if the statutory funding
-schedule is followed and all assumptions are met.
+December 31, 2025 actuarial valuation (PABF: December 31, 2024 — see quirks below).
+These are the authoritative "plan's own" projection paths — what the actuary says
+will happen if the statutory funding schedule is followed and all assumptions are met.
 
 Two uses:
 1. **Display**: show each fund's stated glide path to 90% funded on the dashboard.
@@ -40,21 +40,28 @@ in each AV. The normalize pipeline multiplies by 1000 when loading these into
 
 ## Sources
 
-- `labf.csv` — LABF 2024 AV Table 4, 50-Year Projections (2024–2073). GRS.
-- `meabf.csv` — MEABF 2024 AV Exhibit 8, 50-Year Projection (2024–2074). Segal.
-- `pabf.csv` — PABF 2024 AV Table 3A, 32-Year Projection (2024–2055). GRS. Discount rate 6.75%.
-- `fabf.csv` — FABF 2024 AV Exhibit 9, 38-Year Projection (2024–2061). Segal.
+- `labf.csv` — LABF 2025 AV Table 4, 50-Year Projections (2025–2074). GRS.
+- `meabf.csv` — MEABF 2025 AV Exhibit 8, 50-Year Projection (2025–2075). Segal.
+  ADC for 2026–2031 from Exhibit 9 (Development of city contribution requirements).
+- `pabf.csv` — **STALE: PABF 2024 AV Table 3A, 32-Year Projection (2024–2055). GRS.**
+  The document PABF released for FY2025 is the audited financial statements, not the
+  GRS actuarial valuation, so no 12/31/2025 projection schedule was available.
+  Replace when the PABF 2025 AV is published. Note the 2024-vintage schedule does
+  NOT reflect the P.A. 104-0065 Tier 2 enhancement (+$157.9M TPL for PABF).
+- `fabf.csv` — FABF 2025 AV Exhibit 9, 37-Year Projection (2025–2062). Segal.
 
 ## Known fund-specific quirks
 
-- **LABF/PABF/FABF** show statutory contribution as *receivable* (paid following FY).
-  **MEABF** shows employer contribution on a cash basis (paid in the FY). The
+- **LABF/PABF** show statutory contribution as *receivable* (paid following FY).
+  **MEABF/FABF** show employer contribution on a cash basis (paid in the FY). The
   underlying statutory requirement is the same; only timing differs.
-- **PABF 2025 supplemental**: the PABF AV projection schedule does not explicitly
-  show the 2025 City supplemental contribution separately; it is embedded in the
-  starting MVA.
-- **MEABF 2025 supplemental**: explicitly $168,736,173 embedded in the 2025
-  Employer Contribution (Cash Basis) column.
-- **FABF 2025 supplemental**: $15,640,948, shown in its own column for 2025 only.
+- **LABF employerContribution** is Table 4's "Total Statutory Contribution" column
+  (the city contribution booked for that fiscal year, paid the following May).
+- **FABF employerContribution** = statutory contribution + supplemental columns.
+- **MEABF 2026 supplemental**: $80,609,447 embedded in the 2026 Employer
+  Contribution (Cash Basis) column. No later supplementals assumed.
+- **FABF 2026 supplemental**: $5,791,572, shown in its own column for 2026 only.
 - All four funds' projections assume statutory funding ramp to 90% funded by 2055
   (police/fire) or 2058 (municipal/laborers), per P.A. 100-0023.
+- Rows for years ≤ the latest observed FY are dropped by the normalize step
+  (observations win), so the 2025 rows here are for reference/validation only.

@@ -54,7 +54,7 @@ export default function BurdenPage() {
   const libraryShareOfCityLevy = libraryLevy2024 / cityLevyTotal2024;
   const propertyTaxPerHousehold = pensionLevy2024 / households;
 
-  // Fixed nominal contribution path for the growth module: FY2024 actual,
+  // Fixed nominal contribution path for the growth module: latest-FY actual,
   // then the AV-baseline projection. The obligation does not move; only the
   // population denominator grows.
   const growthContributions = [
