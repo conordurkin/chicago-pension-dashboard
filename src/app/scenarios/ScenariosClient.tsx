@@ -469,10 +469,10 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
           }
           explainer={
             chartTab === 'fundedRatio'
-              ? `This chart overlays three series: ${latest.fy - ts.observations[0].fy + 1} years of historical market-basis funded ratio (solid), the forward projection under the current scenario assumptions (dashed, fund-colored), and the fund actuary's own baseline from the 2025 actuarial valuation (dotted grey; PABF: 2024, its latest published valuation). The actuary baseline assumes the statutory funding schedule is followed and all assumptions are met.`
+              ? `This chart overlays three series: ${latest.fy - ts.observations[0].fy + 1} years of historical market-basis funded ratio (solid), the forward projection under the current scenario assumptions (dashed, fund-colored), and the fund actuary's own baseline from the 2025 actuarial valuation (dotted grey). The actuary baseline assumes the statutory funding schedule is followed and all assumptions are met.`
               : `Historical employer contributions (solid) alongside the forward projection under your scenario (dashed) and the fund actuary's own 2025 AV baseline (dotted grey). The dashed line is what the city would pay each year under your assumptions; the cumulative figure in the subtitle is the total bill through the target year.`
           }
-          source="Public Plans Database + 2025 actuarial valuations (PABF: 2024) + scenario engine"
+          source="Public Plans Database + 2025 actuarial valuations + scenario engine"
         >
           <div className="-mt-2 mb-3 flex items-center gap-1.5">
             <ChartTabButton
@@ -530,7 +530,7 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
 
         <section className="rounded-xl border border-slate-200 bg-amber-50 p-4 text-sm text-amber-900">
           <strong>A caveat:</strong> this is a layered-amortization model built on top of each
-          fund&rsquo;s published 2025 actuarial valuation baseline (PABF: 2024). Scenario adjustments (return
+          fund&rsquo;s published 2025 actuarial valuation baseline. Scenario adjustments (return
           deviations, rate changes, extra payments) are translated into closed-period
           amortization layers that re-amortize the UAAL on top of the AV&rsquo;s own projection.
           We inherit the actuary&rsquo;s assumptions about mortality, retirement, and tier mix;

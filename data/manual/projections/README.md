@@ -1,9 +1,9 @@
-# Fund projection schedules (2025 actuarial valuations; PABF still 2024)
+# Fund projection schedules (2025 actuarial valuations)
 
 Each file `{fundId}.csv` contains the fund-actuary's own forward projection from the
-December 31, 2025 actuarial valuation (PABF: December 31, 2024 — see quirks below).
-These are the authoritative "plan's own" projection paths — what the actuary says
-will happen if the statutory funding schedule is followed and all assumptions are met.
+December 31, 2025 actuarial valuation. These are the authoritative "plan's own"
+projection paths — what the actuary says will happen if the statutory funding
+schedule is followed and all assumptions are met.
 
 Two uses:
 1. **Display**: show each fund's stated glide path to 90% funded on the dashboard.
@@ -43,11 +43,9 @@ in each AV. The normalize pipeline multiplies by 1000 when loading these into
 - `labf.csv` — LABF 2025 AV Table 4, 50-Year Projections (2025–2074). GRS.
 - `meabf.csv` — MEABF 2025 AV Exhibit 8, 50-Year Projection (2025–2075). Segal.
   ADC for 2026–2031 from Exhibit 9 (Development of city contribution requirements).
-- `pabf.csv` — **STALE: PABF 2024 AV Table 3A, 32-Year Projection (2024–2055). GRS.**
-  The document PABF released for FY2025 is the audited financial statements, not the
-  GRS actuarial valuation, so no 12/31/2025 projection schedule was available.
-  Replace when the PABF 2025 AV is published. Note the 2024-vintage schedule does
-  NOT reflect the P.A. 104-0065 Tier 2 enhancement (+$157.9M TPL for PABF).
+- `pabf.csv` — PABF 2025 AV Table 3A, 31-Year Projection (2025–2055). GRS.
+  Discount rate 6.75%. Reflects the P.A. 104-0065 Tier 2 enhancement and the
+  2025 salary/retirement/termination assumption changes.
 - `fabf.csv` — FABF 2025 AV Exhibit 9, 37-Year Projection (2025–2062). Segal.
 
 ## Known fund-specific quirks

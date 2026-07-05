@@ -128,10 +128,10 @@ export default function MethodologyPage() {
         <h2>Actuary baseline projections</h2>
         <p>
           Alongside the scenario engine, the dashboard overlays each fund actuary&rsquo;s
-          own forward projection from the 2025 actuarial valuation (PABF: 2024, its latest
-          published valuation). These are the fund&rsquo;s &ldquo;if we follow the statutory
-          funding schedule and all assumptions are met&rdquo; glide path to 90% funded by
-          2055 (Police/Fire) or 2058 (Municipal/Laborers) per P.A. 100-0023.
+          own forward projection from the 2025 actuarial valuation. These are the
+          fund&rsquo;s &ldquo;if we follow the statutory funding schedule and all assumptions
+          are met&rdquo; glide path to 90% funded by 2055 (Police/Fire) or 2058
+          (Municipal/Laborers) per P.A. 100-0023.
         </p>
         <ul>
           <li>
@@ -141,11 +141,8 @@ export default function MethodologyPage() {
             <strong>MEABF</strong> &mdash; 2025 AV Exhibit 8, 50-Year Projection (2025&ndash;2075). Segal.
           </li>
           <li>
-            <strong>PABF</strong> &mdash; 2024 AV Table 3A, 32-Year Projection (2024&ndash;2055) at a 6.75%
-            discount rate. GRS. PABF&rsquo;s FY2025 release was its audited financial
-            statements, which carry no projection schedule; this baseline will be replaced
-            when the 12/31/2025 valuation is published. Note it predates the P.A. 104-0065
-            Tier 2 benefit enhancement.
+            <strong>PABF</strong> &mdash; 2025 AV Table 3A, 31-Year Projection (2025&ndash;2055) at a 6.75%
+            discount rate. GRS.
           </li>
           <li>
             <strong>FABF</strong> &mdash; 2025 AV Exhibit 9, 37-Year Projection (2025&ndash;2062). Segal.

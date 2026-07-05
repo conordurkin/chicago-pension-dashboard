@@ -50,8 +50,8 @@ export function HomeHeadlineChart({
     contributions: {
       title: 'What the city pays',
       subtitle: 'Annual employer contributions to the four funds (historical and projected)',
-      explainer: `Dark bars are what the City of Chicago actually contributed to the four funds each year. Light bars are the contributions projected under each fund's 2025 actuarial valuation baseline (PABF: 2024, its latest published valuation). Before 2015, contributions were set by statutory multipliers untied to what the funds actually owed (which helped produce the underfunded system we're left with today). 2015 was the first step up the ramp for Police and Fire, with Municipal and Laborers following in 2017. By 2022 the city had fully 'climbed the ramp,' with all four funds receiving their full statutorily required contributions. Payments are forecast to remain elevated through 2055 to amortize our unfunded liabilities and bring the system up to the 90% funded target.`,
-      source: 'Public Plans Database + 2025 actuarial valuations (PABF: 2024) + FY2025 fund reports',
+      explainer: `Dark bars are what the City of Chicago actually contributed to the four funds each year. Light bars are the contributions projected under each fund's 2025 actuarial valuation baseline. Before 2015, contributions were set by statutory multipliers untied to what the funds actually owed (which helped produce the underfunded system we're left with today). 2015 was the first step up the ramp for Police and Fire, with Municipal and Laborers following in 2017. By 2022 the city had fully 'climbed the ramp,' with all four funds receiving their full statutorily required contributions. Payments are forecast to remain elevated through 2055 to amortize our unfunded liabilities and bring the system up to the 90% funded target.`,
+      source: 'Public Plans Database + 2025 actuarial valuations + FY2025 fund reports',
     },
     assets: {
       title: 'Market assets vs. total liabilities',

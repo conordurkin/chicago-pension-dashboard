@@ -3,8 +3,7 @@
  *
  * Payroll growth rates are derived as the CAGR of each fund's projected
  * covered payroll from FY2026 through its statutory target year, taken
- * directly from the fund's FY2025 actuarial valuation projection schedule
- * (PABF: FY2024 AV — its FY2025 valuation is not yet published).
+ * directly from the fund's FY2025 actuarial valuation projection schedule.
  * These rates are used for level-percent-of-pay amortization of scenario
  * layers (return-experience, target-override, etc.).
  *
@@ -19,9 +18,9 @@ import type { FundId } from '@/types/pension';
 export const PAYROLL_GROWTH: Record<FundId, number> = {
   meabf: 0.0235,
   labf: 0.0199,
-  pabf: 0.0141,
+  pabf: 0.0272,
   fabf: 0.0257,
-  aggregate: 0.02,
+  aggregate: 0.0248,
 };
 
 /**

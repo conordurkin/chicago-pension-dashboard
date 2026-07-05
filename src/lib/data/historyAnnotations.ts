@@ -144,4 +144,11 @@ export const HISTORY_ANNOTATIONS: HistoryAnnotation[] = [
       'Casino revenue is earmarked to help fund the Police and Fire pensions. A useful supplement once operations ramp up, but small relative to the scale of the obligation - projected at roughly $200M/year versus multi-billion annual contributions.',
     category: 'context',
   },
+  {
+    fy: 2025,
+    title: 'PA 104-0065 sweetens Tier 2 police/fire benefits',
+    summary:
+      'Springfield raises the Tier 2 pensionable salary cap for police and fire and grows it at the lesser of 3% or full CPI going forward (previously half of CPI), and enhances certain widow annuities. The change adds roughly $300M to the two funds\' reported liabilities in its first year - a reminder that benefit rules can still move in only one direction under the Illinois Constitution.',
+    category: 'benefit',
+  },
 ];
