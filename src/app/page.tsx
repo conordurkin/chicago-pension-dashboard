@@ -88,7 +88,20 @@ export default function HomePage() {
               : undefined
           }
           deltaTone={frDelta !== null && frDelta > 0 ? 'good' : 'bad'}
-          hint={`For every dollar the funds owe in liabilities, they hold about ${Math.round((latest.fundedRatioMVA ?? 0) * 100)} cents of assets today.`}
+          hint={
+            <>
+              For every dollar the funds owe in liabilities, they hold about{' '}
+              {Math.round((latest.fundedRatioMVA ?? 0) * 100)} cents of assets today. Measured
+              at market value; the funds&apos; own smoothed (actuarial) ratio runs slightly
+              lower.{' '}
+              <Link
+                href="/methodology#market-vs-actuarial"
+                className="text-slate-700 underline decoration-slate-300 underline-offset-2 hover:text-slate-900"
+              >
+                What&apos;s the difference?
+              </Link>
+            </>
+          }
         />
         <KPITile
           label="Employer Contribution"

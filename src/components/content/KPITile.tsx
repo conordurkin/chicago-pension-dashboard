@@ -8,8 +8,8 @@ interface KPITileProps {
   delta?: string;
   /** Positive/negative/neutral for coloring the delta. */
   deltaTone?: 'good' | 'bad' | 'neutral';
-  /** Short hint text shown beneath value. */
-  hint?: string;
+  /** Short hint shown beneath value. Accepts rich content (e.g. a link). */
+  hint?: ReactNode;
   icon?: ReactNode;
   className?: string;
 }

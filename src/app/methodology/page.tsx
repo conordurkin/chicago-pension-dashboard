@@ -108,7 +108,7 @@ export default function MethodologyPage() {
           </li>
         </ul>
 
-        <h2>Market vs. actuarial basis</h2>
+        <h2 id="market-vs-actuarial">Market vs. actuarial basis</h2>
         <p>
           This dashboard <strong>anchors on market value</strong> of assets, with actuarial
           values shown as a secondary reference. The actuarial (smoothed) value intentionally
@@ -123,6 +123,37 @@ export default function MethodologyPage() {
         <p>
           using the GASB 25 AAL (since TPL is not available pre-2014). This gives a
           consistent ratio definition across the full time series.
+        </p>
+        <p>
+          In practice you will see <strong>three</strong> funded ratios quoted for the same
+          year, and for FY2025 they land close together but are not interchangeable:
+        </p>
+        <ul>
+          <li>
+            <strong>Market basis (what this dashboard leads with)</strong> &mdash; market
+            assets over accrued liability: 28.2% for FY2025. After a strong market year,
+            this is the most flattering of the three.
+          </li>
+          <li>
+            <strong>Actuarial (smoothed) basis</strong> &mdash; what the funds&rsquo; own
+            valuations lead with, using smoothed assets: about 27.5% in aggregate for FY2025
+            (fund by fund: MEABF 27.4%, LABF 43.5%, PABF 26.1%, FABF 24.7%). Because
+            smoothing is still recognizing 2022&rsquo;s losses and deferring part of
+            2023&ndash;2025&rsquo;s gains, it currently sits below market.
+          </li>
+          <li>
+            <strong>GASB reporting basis</strong> &mdash; what the city&rsquo;s ACFR reports
+            (and what press coverage usually quotes): market assets over the GASB Total
+            Pension Liability, about 28.1% in aggregate for FY2025. It differs from our
+            market-basis ratio only in the liability denominator, which for two funds is
+            discounted at a slightly blended rate.
+          </li>
+        </ul>
+        <p>
+          None of these is &ldquo;wrong&rdquo; &mdash; they answer different questions. But
+          when a headline says the funds &ldquo;improved to 28%,&rdquo; it is describing a
+          market-value measure that moves with every market swing, not the smoothed measure
+          the funding schedule actually responds to.
         </p>
 
         <h2>Actuary baseline projections</h2>

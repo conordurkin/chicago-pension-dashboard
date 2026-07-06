@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { parseAsFloat, parseAsStringLiteral, useQueryState } from 'nuqs';
 import {
   Area,
   ComposedChart,
@@ -53,7 +54,7 @@ interface ScenarioGrowthModuleProps {
   color: string;
 }
 
-type Metric = 'liability' | 'contribution';
+const METRICS = ['liability', 'contribution'] as const;
 
 export function ScenarioGrowthModule({
   projected,
@@ -62,8 +63,18 @@ export function ScenarioGrowthModule({
   targetYear,
   color,
 }: ScenarioGrowthModuleProps) {
-  const [metric, setMetric] = useState<Metric>('liability');
-  const [rate, setRate] = useState(GROWTH_DEFAULT_RATE);
+  // URL-serialized (like the scenario params above) so shared links keep the
+  // growth lens: ?growthMetric=contribution&growth=0.022
+  const [metric, setMetric] = useQueryState(
+    'growthMetric',
+    parseAsStringLiteral(METRICS)
+      .withDefault('liability')
+      .withOptions({ clearOnDefault: true }),
+  );
+  const [rate, setRate] = useQueryState(
+    'growth',
+    parseAsFloat.withDefault(GROWTH_DEFAULT_RATE).withOptions({ clearOnDefault: true }),
+  );
 
   const series = useMemo(
     () => projected.filter((p) => p.fy <= targetYear),

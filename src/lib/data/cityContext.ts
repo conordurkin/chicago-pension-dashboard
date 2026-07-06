@@ -95,6 +95,31 @@ export const CITY_FISCAL_HISTORY: CityFiscalSnapshot[] = [
     cityPropertyTaxLevyTotal: 1_770_500_000,
     pensionFromCorporateFund: 801_000_000,
   },
+  {
+    fy: 2025,
+    // FY2025 enacted figures from the City of Chicago FY2026 Budget Overview
+    // (Summary of Proposed Budget - All Funds, 2025 Budget column: net grand
+    // total $17,102.4M, Corporate Fund $5,788.0M) and its Budget Detail levy
+    // tables (2025 appropriation column). The FY2025 budget passed with no
+    // increase to the base levy; the debt-service portion stepped up.
+    totalAppropriations: 17_102_400_000,
+    corporateFund: 5_788_000_000,
+    // Actual employer contributions paid to the four funds in FY2025, per the
+    // funds' 12/31/2025 reports / FY2025 city ACFR (incl. $272M supplemental).
+    pensionContribution: 2_852_778_219,
+    // Levy split follows the budget-book pie convention: pensions = MEABF
+    // $167.9M + LABF $54.7M + PABF $813.5M + FABF $367.0M; library = library
+    // levy $122.0M + MEABF library-employee levy $8.8M; debt = GO bond
+    // redemption levy $272.9M.
+    pensionPropertyTaxLevy: 1_403_100_000,
+    cityPropertyTaxDebtService: 272_900_000,
+    cityPropertyTaxLibrary: 130_800_000,
+    cityPropertyTaxLevyTotal: 1_806_800_000,
+    // Corporate Fund payments + Corporate Fund supplemental pension
+    // allocations across the four funds (FY2026 Budget Overview, Budget
+    // Detail pension-fund tables).
+    pensionFromCorporateFund: 943_400_000,
+  },
 ];
 
 /**

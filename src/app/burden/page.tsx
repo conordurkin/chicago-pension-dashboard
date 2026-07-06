@@ -43,16 +43,16 @@ export default function BurdenPage() {
   const cumulativePerHousehold = cumulativeProjected / households;
   const projectionEndFy = proj.length > 0 ? proj[proj.length - 1].fy : null;
 
-  const fy2024 = CITY_FISCAL_HISTORY[2];
-  const pensionLevy2024 = fy2024.pensionPropertyTaxLevy;
-  const debtLevy2024 = fy2024.cityPropertyTaxDebtService ?? 0;
-  const libraryLevy2024 = fy2024.cityPropertyTaxLibrary ?? 0;
-  const cityLevyTotal2024 =
-    fy2024.cityPropertyTaxLevyTotal ?? pensionLevy2024 + debtLevy2024 + libraryLevy2024;
-  const pensionShareOfCityLevy = pensionLevy2024 / cityLevyTotal2024;
-  const debtShareOfCityLevy = debtLevy2024 / cityLevyTotal2024;
-  const libraryShareOfCityLevy = libraryLevy2024 / cityLevyTotal2024;
-  const propertyTaxPerHousehold = pensionLevy2024 / households;
+  const latestFiscal = CITY_FISCAL_HISTORY[CITY_FISCAL_HISTORY.length - 1];
+  const pensionLevy = latestFiscal.pensionPropertyTaxLevy;
+  const debtLevy = latestFiscal.cityPropertyTaxDebtService ?? 0;
+  const libraryLevy = latestFiscal.cityPropertyTaxLibrary ?? 0;
+  const cityLevyTotal =
+    latestFiscal.cityPropertyTaxLevyTotal ?? pensionLevy + debtLevy + libraryLevy;
+  const pensionShareOfCityLevy = pensionLevy / cityLevyTotal;
+  const debtShareOfCityLevy = debtLevy / cityLevyTotal;
+  const libraryShareOfCityLevy = libraryLevy / cityLevyTotal;
+  const propertyTaxPerHousehold = pensionLevy / households;
 
   // Fixed nominal contribution path for the growth module: latest-FY actual,
   // then the AV-baseline projection. The obligation does not move; only the
@@ -166,7 +166,7 @@ export default function BurdenPage() {
         <GrowthBurdenSection
           contributions={growthContributions}
           basePopulation={population}
-          baseYear={fy2024.fy}
+          baseYear={latestFiscal.fy}
           color={AGGREGATE_METADATA.color}
         />
         <p className="mt-4 text-sm text-slate-500">
@@ -186,10 +186,10 @@ export default function BurdenPage() {
         </h2>
         <p className="mb-5 text-slate-700">
           Chicago&apos;s property tax levy funds three things: pensions, debt service on city
-          bonds, and the public library system. In FY{fy2024.fy}, of the city&apos;s{' '}
-          {formatBillions(cityLevyTotal2024, 2)} property tax levy,{' '}
+          bonds, and the public library system. In FY{latestFiscal.fy}, of the city&apos;s{' '}
+          {formatBillions(cityLevyTotal, 2)} property tax levy,{' '}
           <span className="font-semibold">
-            {formatBillions(pensionLevy2024, 2)} ({formatPercent(pensionShareOfCityLevy, 0)})
+            {formatBillions(pensionLevy, 2)} ({formatPercent(pensionShareOfCityLevy, 0)})
           </span>{' '}
           went to the four pension funds. That works out to about{' '}
           <span className="font-semibold">
@@ -199,29 +199,29 @@ export default function BurdenPage() {
         </p>
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <h3 className="text-base font-semibold tracking-tight text-slate-900">
-            FY{fy2024.fy} City of Chicago property tax levy, by purpose
+            FY{latestFiscal.fy} City of Chicago property tax levy, by purpose
           </h3>
           <p className="mb-4 text-sm text-slate-500">
-            Total levy of {formatBillions(cityLevyTotal2024, 2)}, allocated as set by the
+            Total levy of {formatBillions(cityLevyTotal, 2)}, allocated as set by the
             City&apos;s annual appropriation ordinance.
           </p>
           <LevyStackedBar
             segments={[
               {
                 label: 'Pension funds (PABF, FABF, MEABF, LABF)',
-                amount: pensionLevy2024,
+                amount: pensionLevy,
                 share: pensionShareOfCityLevy,
                 color: '#7f1d1d',
               },
               {
                 label: 'Long-term debt service',
-                amount: debtLevy2024,
+                amount: debtLevy,
                 share: debtShareOfCityLevy,
                 color: '#475569',
               },
               {
                 label: 'Chicago Public Library',
-                amount: libraryLevy2024,
+                amount: libraryLevy,
                 share: libraryShareOfCityLevy,
                 color: '#94a3b8',
               },
