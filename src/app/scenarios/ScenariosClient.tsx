@@ -188,9 +188,15 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
 
   type ProjectedYear = PerFundProjectedYear | AggregateProjectedYear;
   const projectedYears: ProjectedYear[] = result.years;
+  // Tolerance for "hit the target": half the tile's display precision
+  // (0.1pp). Guards against float dust and AV-table conventions — e.g.
+  // LABF's published 90.0% includes receivable contributions, so its raw
+  // MVA/AAL lands at 89.9986% and would otherwise read "Shortfall" while
+  // the tile prints 90.0%.
+  const FR_TOLERANCE = 5e-4;
   const targetYearReached =
-    projectedYears.find((y) => y.fundedRatio >= targetFundedRatio - 1e-9)?.fy ??
-    null;
+    projectedYears.find((y) => y.fundedRatio >= targetFundedRatio - FR_TOLERANCE)
+      ?.fy ?? null;
   const firstProjectedYear = projectedYears[0];
 
   // Baseline contribution figures, computed by running the engine with
@@ -413,10 +419,12 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
                 : 'Does not hit target'
             }
             deltaTone={
-              result.finalFundedRatio >= targetFundedRatio ? 'good' : 'bad'
+              result.finalFundedRatio >= targetFundedRatio - FR_TOLERANCE
+                ? 'good'
+                : 'bad'
             }
             delta={
-              result.finalFundedRatio >= targetFundedRatio
+              result.finalFundedRatio >= targetFundedRatio - FR_TOLERANCE
                 ? 'On track'
                 : 'Shortfall'
             }
