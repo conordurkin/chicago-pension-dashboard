@@ -2,7 +2,7 @@
  * Baseline extrapolation past the AV's published projection horizon.
  *
  * Each fund's AV publishes `projectionsBaseline` out to some terminal year:
- *   MEABF -> 2074, LABF -> 2073, FABF -> 2061, PABF -> 2055 (statutory).
+ *   MEABF -> 2075, LABF -> 2074, FABF -> 2062, PABF -> 2055 (statutory).
  *
  * When a scenario asks for a target year past this terminal year, we need
  * to extend the baseline. We do it via simple geometric extrapolation:
@@ -217,7 +217,8 @@ export function buildExtendedBaseline(
       refunds: synth.refunds ?? null,
       adminExpenses: synth.adminExpenses ?? null,
       netCashflow: synth.netCashflow ?? null,
-      investmentIncome: null,
+      totalAdditions: null,
+      netInvestmentIncome: null,
       interestDividends: null,
       fairValueChange: null,
       return1yr: null,

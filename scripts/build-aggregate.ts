@@ -9,8 +9,10 @@
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
-import type { FundTimeSeries, YearObservation } from '../src/types/pension';
+import type { FundId, FundTimeSeries, YearObservation } from '../src/types/pension';
 import { AGGREGATE_METADATA, ALL_FUND_IDS } from '../src/types/pension';
+import { buildExtendedBaseline } from '../src/lib/projections/baselineExtension';
+import { STATUTORY_TARGET_YEAR } from '../src/lib/data/scenarioDefaults';
 
 function sumOrNull(values: (number | null)[]): number | null {
   // If ALL are null, return null. Otherwise sum, treating nulls as 0.
@@ -97,7 +99,10 @@ function aggregateYear(yearObservations: YearObservation[]): YearObservation {
       ? totalContributions - (benefitPayments ?? 0) - (adminExpenses ?? 0)
       : null;
 
-  const investmentIncome = sumOrNull(yearObservations.map((o) => o.investmentIncome));
+  const totalAdditions = sumOrNull(yearObservations.map((o) => o.totalAdditions));
+  const netInvestmentIncome = sumOrNull(
+    yearObservations.map((o) => o.netInvestmentIncome),
+  );
   const interestDividends = sumOrNull(yearObservations.map((o) => o.interestDividends));
   const fairValueChange = sumOrNull(yearObservations.map((o) => o.fairValueChange));
 
@@ -221,7 +226,8 @@ function aggregateYear(yearObservations: YearObservation[]): YearObservation {
     refunds,
     adminExpenses,
     netCashflow,
-    investmentIncome,
+    totalAdditions,
+    netInvestmentIncome,
     interestDividends,
     fairValueChange,
     return1yr,
@@ -290,11 +296,37 @@ function main() {
     aggregateObservations.push(aggregateYear(yearObs));
   }
 
-  // Aggregate projection baselines. Only include years where ALL FOUR funds have
-  // a projected row, so the sum is an apples-to-apples cross-fund total. This is
-  // the intersection — typically 2025 through ~2055 (PABF's horizon).
-  const projectionYearSets = fundSeries.map(
-    (fs) => new Set((fs.projectionsBaseline ?? []).map((p) => p.fy)),
+  // Aggregate projection baselines. Only include years where ALL FOUR funds
+  // have a projected row, so the sum is an apples-to-apples cross-fund total.
+  //
+  // PABF's published projection stops at its 2055 statutory target while the
+  // municipal/laborers funds ramp through 2058, so a naive intersection would
+  // silently drop the 2056-2058 tail (~$2B/yr of MEABF+LABF contributions)
+  // from the aggregate. To keep the aggregate honest through the last
+  // statutory target year, any fund whose schedule ends earlier is extended
+  // with `buildExtendedBaseline` — the same validated extrapolation the
+  // scenario engine uses (for PABF these are 90%-maintenance years, the
+  // best-behaved case). The aggregate horizon is capped at that target year;
+  // we do not extrapolate beyond it.
+  const aggregateHorizon = Math.max(...Object.values(STATUTORY_TARGET_YEAR));
+  const extendedBaselines = fundSeries.map((fs) => {
+    const baseline = fs.projectionsBaseline ?? [];
+    if (baseline.length === 0) return baseline;
+    const lastFy = baseline[baseline.length - 1].fy;
+    if (lastFy >= aggregateHorizon) return baseline;
+    const { byFy, extrapolatedFys } = buildExtendedBaseline(
+      baseline,
+      aggregateHorizon,
+      fs.metadata.id as Exclude<FundId, 'aggregate'>,
+    );
+    console.log(
+      `  ${fs.metadata.id.toUpperCase()}: baseline extended ${lastFy} -> ${aggregateHorizon} ` +
+        `(${extrapolatedFys.length} synthesized years for the aggregate)`,
+    );
+    return Array.from(byFy.values()).sort((a, b) => a.fy - b.fy);
+  });
+  const projectionYearSets = extendedBaselines.map(
+    (baseline) => new Set(baseline.map((p) => p.fy)),
   );
   const allFundsHaveProjections = projectionYearSets.every((s) => s.size > 0);
   let aggregateProjections: YearObservation[] | undefined = undefined;
@@ -303,8 +335,8 @@ function main() {
       .filter((y) => projectionYearSets.every((s) => s.has(y)))
       .sort((a, b) => a - b);
     aggregateProjections = commonYears.map((fy) => {
-      const yearObs = fundSeries
-        .map((fs) => (fs.projectionsBaseline ?? []).find((p) => p.fy === fy))
+      const yearObs = extendedBaselines
+        .map((baseline) => baseline.find((p) => p.fy === fy))
         .filter((o): o is YearObservation => !!o);
       return aggregateYear(yearObs);
     });

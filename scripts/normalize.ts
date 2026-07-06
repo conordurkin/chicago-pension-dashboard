@@ -121,8 +121,14 @@ function normalizeRecord(r: PpdRecord): YearObservation {
   const netCashflow =
     totalContributions !== null ? totalContributions - outflows : null;
 
-  // Investment
-  const investmentIncome = dollars(r.income_net);
+  // Investment. PPD's `income_net` is total additions (contributions +
+  // net investment income) across the whole series, so we store it under an
+  // honest name and derive true net investment income by subtraction.
+  const totalAdditions = dollars(r.income_net);
+  const netInvestmentIncome =
+    totalAdditions !== null && totalContributions !== null
+      ? totalAdditions - totalContributions
+      : null;
   const interestDividends = dollars(r.income_interest_dividends_tot);
   const fairValueChange = dollars(r.FairValueChange_tot);
 
@@ -190,7 +196,8 @@ function normalizeRecord(r: PpdRecord): YearObservation {
     adminExpenses,
     netCashflow,
 
-    investmentIncome,
+    totalAdditions,
+    netInvestmentIncome,
     interestDividends,
     fairValueChange,
     return1yr: num(r.InvestmentReturn_1yr),
@@ -250,7 +257,8 @@ function emptyObservation(fy: number): YearObservation {
     adec: null, statutoryRequired: null, percentRequiredPaid: null, contribShortfall: null,
     benefitPayments: null, retBenefits: null, colaBenefits: null, refunds: null,
     adminExpenses: null, netCashflow: null,
-    investmentIncome: null, interestDividends: null, fairValueChange: null,
+    totalAdditions: null, netInvestmentIncome: null,
+    interestDividends: null, fairValueChange: null,
     return1yr: null, return5yr: null, return10yr: null,
     normalCostTotal: null, normalCostER: null, normalCostEE: null,
     normalCostRateTotal: null, normalCostRateER: null, uaalRate: null,
@@ -284,7 +292,7 @@ interface HistoricalRow {
  * Parse data/manual/historical-pre2001.csv into per-fund YearObservations.
  * CSV columns: fundId,fy,aalGASB25,ava,mva,uaalAVA,fundedRatioAVA,payroll,
  *              employerContribution,employeeContribution,benefitPayments,
- *              adminExpenses,investmentIncome,discountRate,actives,
+ *              adminExpenses,netInvestmentIncome,discountRate,actives,
  *              avgActiveSalary,beneficiaries,avgBenefit,adec,
  *              costMethod,sourceNote
  * costMethod and sourceNote are metadata (not stored in YearObservation).
@@ -313,7 +321,7 @@ function loadHistoricalRows(csvPath: string): HistoricalRow[] {
     const employeeContribution = parseCsvCell(cells[idx('employeeContribution')]);
     const benefitPayments = parseCsvCell(cells[idx('benefitPayments')]);
     const adminExpenses = parseCsvCell(cells[idx('adminExpenses')]);
-    const investmentIncome = parseCsvCell(cells[idx('investmentIncome')]);
+    const netInvestmentIncome = parseCsvCell(cells[idx('netInvestmentIncome')]);
     const discountRate = parseCsvCell(cells[idx('discountRate')]);
 
     // Optional demographic + ADC columns (present in extended schema, may be absent in older rows)
@@ -345,7 +353,7 @@ function loadHistoricalRows(csvPath: string): HistoricalRow[] {
     obs.employeeContribution = employeeContribution;
     obs.benefitPayments = benefitPayments;
     obs.adminExpenses = adminExpenses;
-    obs.investmentIncome = investmentIncome;
+    obs.netInvestmentIncome = netInvestmentIncome;
     obs.discountRate = discountRate;
 
     obs.actives = actives === null ? null : Math.round(actives);
@@ -370,6 +378,9 @@ function loadHistoricalRows(csvPath: string): HistoricalRow[] {
       obs.totalContributions =
         (employerContribution ?? 0) + (employeeContribution ?? 0);
     }
+    if (netInvestmentIncome !== null && obs.totalContributions !== null) {
+      obs.totalAdditions = obs.totalContributions + netInvestmentIncome;
+    }
 
     rows.push({ fundId, observation: obs });
   }
@@ -382,7 +393,7 @@ type PatchField = keyof Pick<
   YearObservation,
   | 'aalGASB25' | 'ava' | 'mva' | 'uaalAVA' | 'fundedRatioAVA' | 'payroll'
   | 'employerContribution' | 'employeeContribution' | 'benefitPayments'
-  | 'adminExpenses' | 'investmentIncome' | 'discountRate' | 'actives'
+  | 'adminExpenses' | 'totalAdditions' | 'netInvestmentIncome' | 'discountRate' | 'actives'
   | 'avgActiveSalary' | 'beneficiaries' | 'avgBenefit' | 'adec'
   | 'tplGASB67' | 'npl' | 'fundedRatioGASB67' | 'return1yr' | 'refunds'
   | 'normalCostTotal' | 'normalCostER' | 'statutoryRequired' | 'mvaBeginning'
@@ -417,7 +428,8 @@ function loadPatchRows(csvPath: string): PatchRow[] {
     ['employerContribution', 'employerContribution'],
     ['employeeContribution', 'employeeContribution'],
     ['benefitPayments', 'benefitPayments'], ['adminExpenses', 'adminExpenses'],
-    ['investmentIncome', 'investmentIncome'], ['discountRate', 'discountRate'],
+    ['totalAdditions', 'totalAdditions'],
+    ['netInvestmentIncome', 'netInvestmentIncome'], ['discountRate', 'discountRate'],
     ['actives', 'actives'], ['avgActiveSalary', 'avgActiveSalary'],
     ['beneficiaries', 'beneficiaries'], ['avgBenefit', 'avgBenefit'],
     ['adec', 'adec'],
@@ -469,6 +481,14 @@ function applyPatch(obs: YearObservation, patch: Partial<Record<PatchField, numb
     const outflows = (merged.benefitPayments ?? 0) + (merged.adminExpenses ?? 0);
     merged.netCashflow = merged.totalContributions !== null
       ? merged.totalContributions - outflows : null;
+  }
+  if (merged.totalAdditions === null &&
+      merged.netInvestmentIncome !== null && merged.totalContributions !== null) {
+    merged.totalAdditions = merged.totalContributions + merged.netInvestmentIncome;
+  }
+  if (merged.netInvestmentIncome === null &&
+      merged.totalAdditions !== null && merged.totalContributions !== null) {
+    merged.netInvestmentIncome = merged.totalAdditions - merged.totalContributions;
   }
   merged.burnRate = divOrNull(merged.benefitPayments, merged.mva);
   merged.activesPerBeneficiary =

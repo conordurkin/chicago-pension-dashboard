@@ -100,8 +100,14 @@ export interface YearObservation {
   netCashflow: number | null;
 
   // --- Investment performance ---
-  /** Net investment income (including fair value changes). */
-  investmentIncome: number | null;
+  /**
+   * Total additions for the year: contributions PLUS net investment income.
+   * (Inherited from PPD's `income_net`, which despite the name is total
+   * additions across the whole series — kept under an honest name.)
+   */
+  totalAdditions: number | null;
+  /** Net investment income (including fair value changes), net of fees. */
+  netInvestmentIncome: number | null;
   /** Dividends + interest. */
   interestDividends: number | null;
   /** Change in fair value of investments. */

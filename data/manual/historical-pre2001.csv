@@ -1,4 +1,4 @@
-fundId,fy,aalGASB25,ava,mva,uaalAVA,fundedRatioAVA,payroll,employerContribution,employeeContribution,benefitPayments,adminExpenses,investmentIncome,discountRate,actives,avgActiveSalary,beneficiaries,avgBenefit,adec,costMethod,sourceNote
+fundId,fy,aalGASB25,ava,mva,uaalAVA,fundedRatioAVA,payroll,employerContribution,employeeContribution,benefitPayments,adminExpenses,netInvestmentIncome,discountRate,actives,avgActiveSalary,beneficiaries,avgBenefit,adec,costMethod,sourceNote
 meabf,1987,,,,,,,86928550,,,,,0.075,,,,,,EAN,meabf-av-2001 Exhibit A-7 (NPO development) — ER contribution only
 meabf,1988,,,,,,,92913800,,,,,0.075,,,,,,EAN,meabf-av-2001 Exhibit A-7
 meabf,1989,,,,,,,97196000,,,,,0.075,,,,,,EAN,meabf-av-2001 Exhibit A-7

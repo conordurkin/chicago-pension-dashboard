@@ -180,9 +180,13 @@ export default function MethodologyPage() {
           </li>
         </ul>
         <p>
-          The aggregate (all four combined) baseline sums the four fund projections for years
-          where all four are present &mdash; 2026&ndash;2055, the horizon of the shortest
-          (PABF) projection. Transcribed values are stored in{' '}
+          The aggregate (all four combined) baseline sums the four fund projections through
+          2058, the last statutory target year. PABF&apos;s published schedule ends at its
+          2055 target, so its final three aggregate years (2056&ndash;2058, when PABF is
+          simply maintaining 90% funded) are extrapolated using the same validated method
+          the scenario engine uses to extend baselines; without them the aggregate would
+          silently drop the 2056&ndash;2058 tail of the Municipal and Laborers&apos; ramp
+          and never show the combined system reaching its target. Transcribed values are stored in{' '}
           <code>data/manual/projections/{'{'}fundId{'}'}.csv</code> (dollar values in thousands
           to match the AV format).
         </p>
