@@ -232,7 +232,10 @@ export default function BurdenPage() {
             City of Chicago is only one of several taxing bodies on your property tax bill.
             CPS is the largest slice, and Cook County, parks, and water reclamation each take
             a piece - the city&apos;s portion is roughly one-fifth of a typical Chicago
-            homeowner&apos;s total bill.
+            homeowner&apos;s total bill. Several of those other bodies carry their own pension
+            funds, too (most notably Chicago Public Schools, whose fund carries a significant
+            unfunded liability of its own), and each devotes a real share of its budget and
+            levy to pension costs, the same dynamic playing out at the city level.
           </p>
         </div>
       </section>
