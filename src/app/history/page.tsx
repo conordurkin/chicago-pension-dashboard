@@ -90,8 +90,12 @@ export default function HistoryPage() {
         </h2>
         <p className="mb-5 text-slate-700">
           For most of the last quarter-century, what Chicago paid into its pension funds came
-          in below what its own actuaries said was needed. The green bars below show the
-          city&apos;s annual contribution; the red outlines show the actuarial requirement.
+          in below what its own actuaries said was needed. Two different numbers are at play
+          here: the actuarial requirement is what independent actuaries calculate the city needs
+          to contribute each year to stay on track to cover promised benefits, while the legal
+          requirement is simply whatever state law obligates the city to pay - two numbers that,
+          for most of this period, had little to do with each other. The green bars below show
+          the city&apos;s annual contribution; the red outlines show the actuarial requirement.
           In most years the city was actually paying its full legal contribution - but until the
           2015 and 2017 funding ramps, that legal contribution was a fixed multiple of payroll,
           with no link to liability growth. As liabilities ballooned, the formula stayed
@@ -134,11 +138,14 @@ export default function HistoryPage() {
           ... so when markets stumbled, the liabilities pulled away.
         </h2>
         <p className="mb-5 text-slate-700">
-          With contributions short, the funds were relying on investment returns alone. In good
-          market years that quietly worked. In bad ones - 2001/02, 2008, 2022 - the asset base
-          stalled or shrank while the liabilities kept marching upward. From {firstFy} to{' '}
-          {latestFy}, Chicago&apos;s combined accrued liability grew by nearly $36 billion.
-          Assets grew by less than $2 billion.
+          With contributions short, the funds were leaning on investment returns to close the
+          gap - and that alone was a losing bet. Even in a year where the funds hit their
+          assumed rate of return exactly, contributing less than the actuarial requirement
+          guarantees the unfunded liability keeps growing. Bad market years - 2001/02, 2008,
+          2022 - made it worse, stalling or shrinking the asset base while liabilities kept
+          climbing, but they weren&apos;t the root cause. From {firstFy} to {latestFy}, Chicago&apos;s
+          combined accrued liability grew by nearly $36 billion. Assets grew by less than $2
+          billion.
         </p>
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <h3 className="text-base font-semibold tracking-tight text-slate-900">
@@ -161,7 +168,13 @@ export default function HistoryPage() {
             pre-crisis high eighteen years later. Over the same period, the liability more than
             doubled, growing by over $27 billion. The funds aren&apos;t losing ground because
             assets collapsed; they&apos;re losing ground because assets have essentially treaded
-            water for almost two decades while the bill kept climbing.
+            water for almost two decades while the bill kept climbing. The reverse counterfactual
+            matters too: a fund that had been fully funded and paying its full actuarial bill
+            going into 2008 would still have taken a real hit from that crash alone - plenty of
+            major U.S. public pension systems that entered the crisis well-funded are still
+            working off the unfunded liability it left behind. Chicago faced both forces at once,
+            each big enough on its own to open a lasting gap, and together they compounded rather
+            than simply adding up.
           </p>
         </div>
       </section>
@@ -172,10 +185,9 @@ export default function HistoryPage() {
           The result: a generation of decline.
         </h2>
         <p className="mb-5 text-slate-700">
-          The above produced a funded ratio that fell steadily from the late 1990s through the
-          2010s. Along the way: economic shocks, repeated reform attempts struck down by the
-          courts, and two belated funding-policy overhauls. Through it all, the trajectory was
-          down.
+          The above produced a funded ratio that fell steadily from 2000 through the 2010s. Along
+          the way: economic shocks, repeated reform attempts struck down by the courts, and two
+          belated funding-policy overhauls. Through it all, the trajectory was down.
         </p>
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <h3 className="text-base font-semibold tracking-tight text-slate-900">

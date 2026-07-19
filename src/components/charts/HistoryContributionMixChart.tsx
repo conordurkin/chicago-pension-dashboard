@@ -88,11 +88,14 @@ export function HistoryContributionMixChart({
           />
           <YAxis
             tick={{ fontSize: 11, fill: '#64748b' }}
-            tickFormatter={(v) => (mode === 'dollars' ? `$${v}B` : `${v}%`)}
+            tickFormatter={(v) =>
+              mode === 'dollars' ? `$${v}B` : `${Math.round(v)}%`
+            }
             axisLine={false}
             tickLine={false}
             width={44}
             domain={mode === 'share' ? [0, 100] : undefined}
+            allowDataOverflow={mode === 'share'}
           />
           <Tooltip
             content={(props: unknown) => (

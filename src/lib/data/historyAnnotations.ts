@@ -33,20 +33,6 @@ export const CATEGORY_COLOR: Record<AnnotationCategory, string> = {
 
 export const HISTORY_ANNOTATIONS: HistoryAnnotation[] = [
   {
-    fy: 2002,
-    title: 'LABF falls into deficit',
-    summary:
-      'The Laborers\' fund, which as recently as FY1997 had been 135% funded, drops below fully funded for the first time after the dot-com crash. It would never return to surplus. This marks the year all four city pension funds were officially underfunded.',
-    category: 'funding',
-  },
-  {
-    fy: 2003,
-    title: 'Illinois issues $10B pension obligation bond',
-    summary:
-      'The state borrows $10 billion to pay down state-level pension debt. A sign of the era\'s go-to playbook: deferring pension costs via financial engineering rather than cash contributions. Chicago didn\'t participate directly, but the political logic was in the air.',
-    category: 'context',
-  },
-  {
     fy: 2008,
     title: 'Global Financial Crisis',
     summary:
@@ -64,7 +50,7 @@ export const HISTORY_ANNOTATIONS: HistoryAnnotation[] = [
     fy: 2010,
     title: 'Tier 2 created (PA 96-0889)',
     summary:
-      'New hires from 2011 forward get significantly reduced benefits: higher retirement age, lower COLA, capped pensionable salary. Existing workers and retirees are untouched, protected by the Illinois Constitution. The savings take decades to materialize.',
+      'New hires from 2011 forward get significantly reduced benefits: higher retirement age, a lower cost-of-living adjustment (COLA), and a capped pensionable salary. Existing workers and retirees are untouched, protected by the Illinois Constitution. The savings take decades to materialize.',
     category: 'benefit',
   },
   {
@@ -78,7 +64,7 @@ export const HISTORY_ANNOTATIONS: HistoryAnnotation[] = [
     fy: 2013,
     title: 'Illinois passes state pension reform (PA 98-0599)',
     summary:
-      'Quinn signs sweeping state-level pension reform: reduced COLAs, capped pensionable salary, raised retirement ages for TRS, SERS, SURS, JRS, and GARS. It doesn\'t directly cover Chicago\'s four city funds, but if upheld it would have established that Illinois could legally trim accrued benefits - the constitutional escape hatch the city was counting on.',
+      'Quinn signs sweeping state-level pension reform: reduced COLAs, capped pensionable salary, and raised retirement ages across several state-run pension systems (covering teachers, state employees, university staff, judges, and legislators). It doesn\'t directly cover Chicago\'s four city funds, but if upheld it would have established that Illinois could legally trim accrued benefits - the constitutional escape hatch the city was counting on.',
     category: 'reform',
   },
   {
@@ -127,7 +113,7 @@ export const HISTORY_ANNOTATIONS: HistoryAnnotation[] = [
     fy: 2020,
     title: 'Lightfoot begins supplemental pension payments',
     summary:
-      'The city starts paying more than the statutory minimum, topping up contributions by hundreds of millions of dollars per year. A policy choice, not a legal requirement - and one that could be reversed by a future administration.',
+      'The city starts paying more than the statutory minimum, topping up contributions by hundreds of millions of dollars per year - made easier by federal COVID-relief stimulus funds freeing up room in the budget. A policy choice, not a legal requirement - and one that could be reversed by a future administration.',
     category: 'funding',
   },
   {
