@@ -340,7 +340,7 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
           min={rateMin}
           max={rateMax}
           step={0.001}
-          format={(v) => formatPercent(v, 2)}
+          format={(v) => formatPercent(v, fundId === 'aggregate' ? 1 : 2)}
           onChange={(v) =>
             setAssumedReturnRaw(v === sensitivity.baselineRate ? null : v)
           }
@@ -383,6 +383,11 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
           onChange={(v) => setTargetYearRaw(v === meta.targetYear ? null : v)}
           description="Year by which the target funded ratio should be reached."
         />
+        <p className="-mt-3 mb-5 text-xs text-slate-500">
+          These sliders default to what&rsquo;s required under Illinois&rsquo; current pension
+          funding law (P.A. 100-0023) - adjust either one to see what a stricter or looser
+          target would cost.
+        </p>
 
         <SliderControl
           label="Extra annual payment"
@@ -478,7 +483,7 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
           explainer={
             chartTab === 'fundedRatio'
               ? `This chart overlays three series: ${latest.fy - ts.observations[0].fy + 1} years of historical market-basis funded ratio (solid), the forward projection under the current scenario assumptions (dashed, fund-colored), and the fund actuary's own baseline from the 2025 actuarial valuation (dotted grey). The actuary baseline assumes the statutory funding schedule is followed and all assumptions are met.`
-              : `Historical employer contributions (solid) alongside the forward projection under your scenario (dashed) and the fund actuary's own 2025 AV baseline (dotted grey). The dashed line is what the city would pay each year under your assumptions; the cumulative figure in the subtitle is the total bill through the target year.`
+              : `Solid bars are employer contributions actually paid; the same bars fade to a lighter shade for the forward projection under your scenario. The dashed grey line is the fund actuary's own baseline from the 2025 actuarial valuation. The cumulative figure in the subtitle is the total scenario bill through the target year.`
           }
           source="Public Plans Database + 2025 actuarial valuations + scenario engine"
         >
@@ -497,8 +502,17 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
             </ChartTabButton>
           </div>
           <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600">
-            <LegendSwatch color={meta.color} kind="solid" label="Historical" />
-            <LegendSwatch color={meta.color} kind="dashed" label="Scenario" />
+            {chartTab === 'contributions' ? (
+              <>
+                <BarSwatch color={meta.color} opacity={1} label="Historical" />
+                <BarSwatch color={meta.color} opacity={0.5} label="Scenario" />
+              </>
+            ) : (
+              <>
+                <LegendSwatch color={meta.color} kind="solid" label="Historical" />
+                <LegendSwatch color={meta.color} kind="dashed" label="Scenario" />
+              </>
+            )}
             {ts.projectionsBaseline && ts.projectionsBaseline.length > 0 && (
               <LegendSwatch color="#64748b" kind="dotted" label="Actuary baseline (2025 AV)" />
             )}
@@ -610,6 +624,25 @@ function ChartTabButton({
     >
       {children}
     </button>
+  );
+}
+
+function BarSwatch({
+  color,
+  opacity,
+  label,
+}: {
+  color: string;
+  opacity: number;
+  label: string;
+}) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <svg width="14" height="10" aria-hidden="true">
+        <rect x="0" y="0" width="14" height="10" rx="2" fill={color} fillOpacity={opacity} />
+      </svg>
+      {label}
+    </span>
   );
 }
 

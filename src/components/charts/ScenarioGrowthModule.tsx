@@ -250,12 +250,12 @@ export function ScenarioGrowthModule({
       {/* Live stat tiles */}
       <div className="mt-5 grid grid-cols-1 gap-4 border-t border-slate-100 pt-4 sm:grid-cols-3">
         <Stat
-          label={`Per resident in FY${endFy}`}
+          label={`${metric === 'liability' ? 'Liability' : 'Contribution'} per resident in FY${endFy}`}
           value={`$${formatNumber(last?.grown ?? 0, 0)}`}
           sub={`vs $${formatNumber(last?.flat ?? 0, 0)} with no growth`}
         />
         <Stat
-          label={`${helping ? 'Lower' : 'Higher'} in FY${endFy}`}
+          label={`${helping ? 'Lower' : 'Higher'} vs. no growth in FY${endFy}`}
           value={`$${formatNumber(Math.abs(endDelta), 0)}`}
           sub={`${formatPercent(
             last && last.flat > 0 ? Math.abs(endDelta) / last.flat : 0,
