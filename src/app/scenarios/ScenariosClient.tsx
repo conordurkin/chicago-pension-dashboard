@@ -2,6 +2,7 @@
 
 import { useMemo, type ReactNode } from 'react';
 import {
+  parseAsBoolean,
   parseAsFloat,
   parseAsInteger,
   parseAsStringLiteral,
@@ -28,6 +29,7 @@ import { DISCOUNT_SENSITIVITY, rateRange } from '@/lib/data/discountSensitivity'
 import { STATUTORY_TARGET_FR } from '@/lib/data/scenarioDefaults';
 import {
   MARKET_SHOCK_PRESETS,
+  SHOCK_MAGNITUDE_DEFAULT,
   SHOCK_MAGNITUDE_MAX,
   SHOCK_MAGNITUDE_MIN,
 } from '@/lib/marketShocks';
@@ -87,9 +89,13 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
     'extraYears',
     parseAsInteger.withDefault(10).withOptions({ clearOnDefault: true }),
   );
+  const [shockEnabled, setShockEnabled] = useQueryState(
+    'shockOn',
+    parseAsBoolean.withDefault(false).withOptions({ clearOnDefault: true }),
+  );
   const [shockMagnitude, setShockMagnitude] = useQueryState(
     'shockDelta',
-    parseAsFloat.withDefault(0).withOptions({ clearOnDefault: true }),
+    parseAsFloat.withDefault(SHOCK_MAGNITUDE_DEFAULT).withOptions({ clearOnDefault: true }),
   );
   const [shockYearRaw, setShockYearRaw] = useQueryState('shockYear', parseAsInteger);
   const [chartTab, setChartTab] = useQueryState(
@@ -110,13 +116,14 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
 
   // A one-time shock overrides the realized return outright for that single
   // year, independent of (not stacked with) the flat "actual return minus
-  // assumption" slider above. Magnitude 0 means no shock, same convention as
-  // extraAnnualPayment. Memoized so its object identity is stable across
+  // assumption" slider above. Gated on the shockEnabled toggle rather than
+  // the magnitude value, since magnitude is losses-only and has no "off"
+  // state of its own. Memoized so its object identity is stable across
   // unrelated re-renders (e.g. switching chart tabs) — otherwise every
   // render would recreate the object and defeat the `result` useMemo below.
   const actualReturnOverrides = useMemo(
-    () => (shockMagnitude !== 0 ? { [shockYear]: shockMagnitude } : undefined),
-    [shockMagnitude, shockYear],
+    () => (shockEnabled ? { [shockYear]: shockMagnitude } : undefined),
+    [shockEnabled, shockMagnitude, shockYear],
   );
 
   const isAtDefaults =
@@ -126,7 +133,8 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
     targetFundedRatio === STATUTORY_TARGET_FR &&
     extraAnnualPayment === 0 &&
     extraPaymentYears === 10 &&
-    shockMagnitude === 0 &&
+    shockEnabled === false &&
+    shockMagnitude === SHOCK_MAGNITUDE_DEFAULT &&
     shockYearRaw === null;
 
   const result = useMemo(() => {
@@ -320,7 +328,8 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
               setTargetFundedRatio(STATUTORY_TARGET_FR);
               setExtraAnnualPayment(0);
               setExtraPaymentYears(10);
-              setShockMagnitude(0);
+              setShockEnabled(false);
+              setShockMagnitude(SHOCK_MAGNITUDE_DEFAULT);
               setShockYearRaw(null);
             }}
             disabled={isAtDefaults}
@@ -392,56 +401,6 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
         />
 
         <SliderControl
-          label="Market shock"
-          value={shockMagnitude}
-          min={SHOCK_MAGNITUDE_MIN}
-          max={SHOCK_MAGNITUDE_MAX}
-          step={0.01}
-          format={(v) => (v === 0 ? 'None' : `${v >= 0 ? '+' : ''}${(v * 100).toFixed(0)}%`)}
-          onChange={setShockMagnitude}
-          description="A one-time return shock in a single year, on top of (not stacked with) the assumption above."
-        />
-        <div className="-mt-3 mb-5 flex flex-wrap gap-1.5">
-          {MARKET_SHOCK_PRESETS.map((p) => (
-            <button
-              key={p.label}
-              type="button"
-              onClick={() => setShockMagnitude(shockMagnitude === p.delta ? 0 : p.delta)}
-              title={p.blurb}
-              className={cn(
-                'rounded-full border px-2.5 py-1 text-xs font-medium transition',
-                Math.abs(shockMagnitude - p.delta) < 0.001
-                  ? 'border-slate-900 bg-slate-900 text-white'
-                  : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50',
-              )}
-            >
-              {p.label} ({(p.delta * 100).toFixed(0)}%)
-            </button>
-          ))}
-        </div>
-
-        {shockMagnitude !== 0 && (
-          <>
-            <SliderControl
-              label="Shock year"
-              value={shockYear}
-              min={latest.fy + 1}
-              max={targetYear}
-              step={1}
-              format={(v) => String(v)}
-              onChange={(v) => setShockYearRaw(v)}
-              description="Which year the shock hits."
-            />
-            <p className="-mt-3 mb-5 text-xs text-slate-500">
-              This applies the full shock instantly to that year&rsquo;s market value. In
-              practice, funds smooth gains and losses over several years before they hit the
-              contribution schedule, so a real bill would ramp up more gradually than this
-              chart shows.
-            </p>
-          </>
-        )}
-
-        <SliderControl
           label="Target funded ratio"
           value={targetFundedRatio}
           min={0.7}
@@ -489,6 +448,65 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
           onChange={setExtraPaymentYears}
           description="How many consecutive years (starting in the first projected year) the extra payments run for."
         />
+
+        <div className="mb-1 mt-6 flex items-center justify-between">
+          <label className="text-xs font-medium uppercase tracking-wide text-slate-500">
+            Market shock
+          </label>
+          <ToggleSwitch checked={shockEnabled} onChange={setShockEnabled} />
+        </div>
+        <p className="mb-3 text-xs text-slate-500">
+          Apply a one-time return shock in a single year, on top of (not stacked with) the
+          assumption above.
+        </p>
+
+        {shockEnabled && (
+          <>
+            <SliderControl
+              label="Shock magnitude"
+              value={shockMagnitude}
+              min={SHOCK_MAGNITUDE_MIN}
+              max={SHOCK_MAGNITUDE_MAX}
+              step={0.01}
+              format={(v) => `${(v * 100).toFixed(0)}%`}
+              onChange={setShockMagnitude}
+            />
+            <div className="-mt-3 mb-5 flex flex-wrap gap-1.5">
+              {MARKET_SHOCK_PRESETS.map((p) => (
+                <button
+                  key={p.label}
+                  type="button"
+                  onClick={() => setShockMagnitude(p.delta)}
+                  title={p.blurb}
+                  className={cn(
+                    'rounded-full border px-2.5 py-1 text-xs font-medium transition',
+                    Math.abs(shockMagnitude - p.delta) < 0.001
+                      ? 'border-slate-900 bg-slate-900 text-white'
+                      : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50',
+                  )}
+                >
+                  {p.label} ({(p.delta * 100).toFixed(0)}%)
+                </button>
+              ))}
+            </div>
+            <SliderControl
+              label="Shock year"
+              value={shockYear}
+              min={latest.fy + 1}
+              max={targetYear}
+              step={1}
+              format={(v) => String(v)}
+              onChange={(v) => setShockYearRaw(v)}
+              description="Which year the shock hits."
+            />
+            <p className="-mt-3 text-xs text-slate-500">
+              This applies the full shock instantly to that year&rsquo;s market value. In
+              practice, funds smooth gains and losses over several years before they hit the
+              contribution schedule, so a real bill would ramp up more gradually than this
+              chart shows.
+            </p>
+          </>
+        )}
       </aside>
 
       {/* Results */}
@@ -604,7 +622,7 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
               color={meta.color}
               targetFundedRatio={targetFundedRatio}
               targetYear={targetYear}
-              shockYear={shockMagnitude !== 0 ? shockYear : undefined}
+              shockYear={shockEnabled ? shockYear : undefined}
             />
           ) : (
             <ContributionsProjectionChart
@@ -614,7 +632,7 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
               color={meta.color}
               targetYear={targetYear}
               startFy={2001}
-              shockYear={shockMagnitude !== 0 ? shockYear : undefined}
+              shockYear={shockEnabled ? shockYear : undefined}
             />
           )}
         </ChartContainer>
@@ -681,6 +699,34 @@ interface SliderControlProps {
   format: (v: number) => string;
   onChange: (v: number) => void;
   description?: string;
+}
+
+function ToggleSwitch({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={cn(
+        'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition',
+        checked ? 'bg-slate-900' : 'bg-slate-200',
+      )}
+    >
+      <span
+        className={cn(
+          'inline-block h-3.5 w-3.5 transform rounded-full bg-white transition',
+          checked ? 'translate-x-4' : 'translate-x-1',
+        )}
+      />
+    </button>
+  );
 }
 
 function ChartTabButton({
