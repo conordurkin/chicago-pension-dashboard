@@ -25,6 +25,8 @@ interface ProjectionChartProps {
   color: string;
   targetFundedRatio: number;
   targetYear: number;
+  /** Fiscal year of an active one-time market shock, if any. */
+  shockYear?: number;
 }
 
 interface Row {
@@ -41,6 +43,7 @@ export function ProjectionChart({
   color,
   targetFundedRatio,
   targetYear,
+  shockYear,
 }: ProjectionChartProps) {
   // Build a fy -> row map so we can merge the baseline series onto the same axis.
   const byYear = new Map<number, Row>();
@@ -137,6 +140,19 @@ export function ProjectionChart({
             fontSize: 11,
           }}
         />
+        {shockYear !== undefined && (
+          <ReferenceLine
+            x={shockYear}
+            stroke="#b91c1c"
+            strokeDasharray="3 3"
+            label={{
+              value: 'Shock',
+              position: 'insideBottomLeft',
+              fill: '#b91c1c',
+              fontSize: 11,
+            }}
+          />
+        )}
         <Line
           type="monotone"
           dataKey="historical"

@@ -42,6 +42,14 @@ export interface PerFundScenarioParams {
   assumedReturnDelta: number;
   /** Signed delta from the assumed return for actual returns each year. */
   actualReturnDelta: number;
+  /**
+   * Optional per-year overrides of actualReturnDelta, keyed by absolute
+   * fiscal year. A year present here uses its override value instead of
+   * actualReturnDelta for that year only; every other year falls back to
+   * actualReturnDelta unchanged. Used for one-time market shocks (a single
+   * key). Omit entirely to reproduce today's flat-delta behavior exactly.
+   */
+  actualReturnOverrides?: Record<number, number>;
   /** Target funded ratio at targetYear. Defaults to 0.90 (statutory). */
   targetFundedRatio: number;
   /** Year by which target funded ratio is hit. Defaults to fund's statutory year. */
@@ -220,15 +228,16 @@ export function runPerFundProjection(
   const sensitivity: DiscountRateSensitivity = DISCOUNT_SENSITIVITY[fundId];
   const baselineRate = sensitivity.baselineRate;
   const r = baselineRate + params.assumedReturnDelta;
-  const actualDelta = params.actualReturnDelta;
-  // Realized return deviates from AV's baseline by (assumed + actual). The AV
-  // trajectory was built at AV baseline; we project against a realized rate
-  // of baselineRate + fullDelta. The perturbation recurrence's cross-term
-  // (return on AV's MVA) must use fullDelta to capture the higher/lower
-  // realized return implied by moving the assumed slider, not just the
-  // experience deviation.
-  const fullDelta = params.assumedReturnDelta + actualDelta;
-  const rActual = baselineRate + fullDelta;
+  // Per-year actual-return lookup: a shock year (in actualReturnOverrides)
+  // uses its override value outright for that year only; every other year
+  // falls back to the flat actualReturnDelta. Realized return deviates from
+  // AV's baseline by (assumed + actual). The AV trajectory was built at AV
+  // baseline; we project against a realized rate of baselineRate + fullDelta.
+  // The perturbation recurrence's cross-term (return on AV's MVA) must use
+  // fullDelta to capture the higher/lower realized return implied by moving
+  // the assumed slider, not just the experience deviation.
+  const actualDeltaAt = (fy: number): number =>
+    params.actualReturnOverrides?.[fy] ?? params.actualReturnDelta;
   const payrollGrowth = PAYROLL_GROWTH[fundId];
 
   // AAL re-pricing factor: GASB sensitivity gives TPL at baseline +/-1pp.
@@ -390,6 +399,12 @@ export function runPerFundProjection(
     const unfloorTotalER = scheduledER + extras;
     const totalER = Math.max(0, unfloorTotalER);
     const shortfall = unfloorTotalER - totalER; // <= 0, present only under the floor
+
+    // This year's realized-return deviation — either the flat actualReturnDelta,
+    // or an override for a one-time shock year. See actualDeltaAt above.
+    const actualDelta = actualDeltaAt(fy);
+    const fullDelta = params.assumedReturnDelta + actualDelta;
+    const rActual = baselineRate + fullDelta;
 
     // Experience gain this year: deviation that should spawn an amortization
     // layer over the remaining horizon. Three contributors:

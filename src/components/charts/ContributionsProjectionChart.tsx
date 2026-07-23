@@ -28,6 +28,8 @@ interface ContributionsProjectionChartProps {
   targetYear: number;
   /** Earliest FY to render on the X axis (e.g. 2001 to give context). */
   startFy?: number;
+  /** Fiscal year of an active one-time market shock, if any. */
+  shockYear?: number;
 }
 
 type Regime = 'historical' | 'projected';
@@ -48,6 +50,7 @@ export function ContributionsProjectionChart({
   color,
   targetYear,
   startFy,
+  shockYear,
 }: ContributionsProjectionChartProps) {
   const byYear = new Map<number, Row>();
   const getRow = (fy: number, regime: Regime): Row => {
@@ -135,6 +138,19 @@ export function ContributionsProjectionChart({
               value: 'projected →',
               position: 'insideTopRight',
               fill: '#64748b',
+              fontSize: 11,
+            }}
+          />
+        )}
+        {shockYear !== undefined && (
+          <ReferenceLine
+            x={shockYear}
+            stroke="#b91c1c"
+            strokeDasharray="3 3"
+            label={{
+              value: 'Shock',
+              position: 'insideTopLeft',
+              fill: '#b91c1c',
               fontSize: 11,
             }}
           />

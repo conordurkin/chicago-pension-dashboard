@@ -26,6 +26,11 @@ import {
 } from '@/lib/projections/aggregate';
 import { DISCOUNT_SENSITIVITY, rateRange } from '@/lib/data/discountSensitivity';
 import { STATUTORY_TARGET_FR } from '@/lib/data/scenarioDefaults';
+import {
+  MARKET_SHOCK_PRESETS,
+  SHOCK_MAGNITUDE_MAX,
+  SHOCK_MAGNITUDE_MIN,
+} from '@/lib/marketShocks';
 import { formatBillions, formatPercent } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import {
@@ -82,6 +87,11 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
     'extraYears',
     parseAsInteger.withDefault(10).withOptions({ clearOnDefault: true }),
   );
+  const [shockMagnitude, setShockMagnitude] = useQueryState(
+    'shockDelta',
+    parseAsFloat.withDefault(0).withOptions({ clearOnDefault: true }),
+  );
+  const [shockYearRaw, setShockYearRaw] = useQueryState('shockYear', parseAsInteger);
   const [chartTab, setChartTab] = useQueryState(
     'tab',
     parseAsStringLiteral(['fundedRatio', 'contributions'] as const)
@@ -91,11 +101,23 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
 
   const assumedReturn = assumedReturnRaw ?? sensitivity.baselineRate;
   const targetYear = targetYearRaw ?? meta.targetYear;
+  const shockYear = shockYearRaw ?? latest.fy + 1;
 
   // The v2 engine takes a delta from each fund's baseline rate. At the
   // aggregate level we use the TPL-weighted baseline as the slider anchor;
   // the same delta then applies to all four funds.
   const assumedReturnDelta = assumedReturn - sensitivity.baselineRate;
+
+  // A one-time shock overrides the realized return outright for that single
+  // year, independent of (not stacked with) the flat "actual return minus
+  // assumption" slider above. Magnitude 0 means no shock, same convention as
+  // extraAnnualPayment. Memoized so its object identity is stable across
+  // unrelated re-renders (e.g. switching chart tabs) — otherwise every
+  // render would recreate the object and defeat the `result` useMemo below.
+  const actualReturnOverrides = useMemo(
+    () => (shockMagnitude !== 0 ? { [shockYear]: shockMagnitude } : undefined),
+    [shockMagnitude, shockYear],
+  );
 
   const isAtDefaults =
     assumedReturnRaw === null &&
@@ -103,7 +125,9 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
     targetYearRaw === null &&
     targetFundedRatio === STATUTORY_TARGET_FR &&
     extraAnnualPayment === 0 &&
-    extraPaymentYears === 10;
+    extraPaymentYears === 10 &&
+    shockMagnitude === 0 &&
+    shockYearRaw === null;
 
   const result = useMemo(() => {
     const sharedExtras = extraAnnualPayment * 1e9;
@@ -128,6 +152,7 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
       const paramsPerFund = buildPerFundParams({
         assumedReturnDelta,
         actualReturnDelta,
+        actualReturnOverrides,
         targetFundedRatio,
         amortMethod: 'levelPercent',
         extraAnnualPayment: 0,
@@ -162,6 +187,7 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
       ...defaultPerFundParams(fundId),
       assumedReturnDelta,
       actualReturnDelta,
+      actualReturnOverrides,
       targetFundedRatio,
       targetYear,
       extraAnnualPayment: sharedExtras,
@@ -180,6 +206,7 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
     ts,
     assumedReturnDelta,
     actualReturnDelta,
+    actualReturnOverrides,
     targetFundedRatio,
     targetYear,
     extraAnnualPayment,
@@ -293,6 +320,8 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
               setTargetFundedRatio(STATUTORY_TARGET_FR);
               setExtraAnnualPayment(0);
               setExtraPaymentYears(10);
+              setShockMagnitude(0);
+              setShockYearRaw(null);
             }}
             disabled={isAtDefaults}
             className="text-xs font-medium text-slate-500 underline-offset-2 transition hover:text-slate-900 hover:underline disabled:cursor-not-allowed disabled:text-slate-300 disabled:no-underline"
@@ -361,6 +390,56 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
           onChange={setActualReturnDelta}
           description="How much actual returns beat (or miss) the assumption, every year."
         />
+
+        <SliderControl
+          label="Market shock"
+          value={shockMagnitude}
+          min={SHOCK_MAGNITUDE_MIN}
+          max={SHOCK_MAGNITUDE_MAX}
+          step={0.01}
+          format={(v) => (v === 0 ? 'None' : `${v >= 0 ? '+' : ''}${(v * 100).toFixed(0)}%`)}
+          onChange={setShockMagnitude}
+          description="A one-time return shock in a single year, on top of (not stacked with) the assumption above."
+        />
+        <div className="-mt-3 mb-5 flex flex-wrap gap-1.5">
+          {MARKET_SHOCK_PRESETS.map((p) => (
+            <button
+              key={p.label}
+              type="button"
+              onClick={() => setShockMagnitude(shockMagnitude === p.delta ? 0 : p.delta)}
+              title={p.blurb}
+              className={cn(
+                'rounded-full border px-2.5 py-1 text-xs font-medium transition',
+                Math.abs(shockMagnitude - p.delta) < 0.001
+                  ? 'border-slate-900 bg-slate-900 text-white'
+                  : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50',
+              )}
+            >
+              {p.label} ({(p.delta * 100).toFixed(0)}%)
+            </button>
+          ))}
+        </div>
+
+        {shockMagnitude !== 0 && (
+          <>
+            <SliderControl
+              label="Shock year"
+              value={shockYear}
+              min={latest.fy + 1}
+              max={targetYear}
+              step={1}
+              format={(v) => String(v)}
+              onChange={(v) => setShockYearRaw(v)}
+              description="Which year the shock hits."
+            />
+            <p className="-mt-3 mb-5 text-xs text-slate-500">
+              This applies the full shock instantly to that year&rsquo;s market value. In
+              practice, funds smooth gains and losses over several years before they hit the
+              contribution schedule, so a real bill would ramp up more gradually than this
+              chart shows.
+            </p>
+          </>
+        )}
 
         <SliderControl
           label="Target funded ratio"
@@ -525,6 +604,7 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
               color={meta.color}
               targetFundedRatio={targetFundedRatio}
               targetYear={targetYear}
+              shockYear={shockMagnitude !== 0 ? shockYear : undefined}
             />
           ) : (
             <ContributionsProjectionChart
@@ -534,6 +614,7 @@ export function ScenariosClient({ funds }: ScenariosClientProps) {
               color={meta.color}
               targetYear={targetYear}
               startFy={2001}
+              shockYear={shockMagnitude !== 0 ? shockYear : undefined}
             />
           )}
         </ChartContainer>
